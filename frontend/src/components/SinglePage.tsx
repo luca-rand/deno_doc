@@ -11,7 +11,7 @@ import {
 import { Page } from "./Page";
 import { JSDoc, CodeBlock } from "./JSDoc";
 import { ClassCard } from "./Class";
-import { TsType } from "./TsType";
+import { TsType, isTypeOptional } from "./TsType";
 import { FunctionCard } from "./Function";
 import { EnumCard } from "./Enum";
 import { InterfaceCard } from "./Interface";
@@ -118,7 +118,6 @@ export function SinglePage() {
                 <SimpleCard
                   node={node}
                   key={`${node.kind}.${node.name}+${i}`}
-                  showSnippet
                 />
               ))}
             </div>
@@ -144,17 +143,21 @@ export function SimpleCard({
   returnType?: TsTypeDef;
   showSnippet?: boolean;
 }) {
-  const paramElements = (params ?? []).flatMap(p => [
-    <>
-      {p.name}
-      {p.tsType ? (
-        <>
-          : <TsType tsType={p.tsType} />
-        </>
-      ) : null}
-    </>,
-    ", "
-  ]);
+  const paramElements = (params ?? []).flatMap(p => {
+    const [isOptional, tsType] = isTypeOptional(p.tsType);
+    return [
+      <>
+        {p.name}
+        {isOptional ? "?" : null}
+        {p.tsType ? (
+          <>
+            : <TsType tsType={p.tsType} />
+          </>
+        ) : null}
+      </>,
+      ", "
+    ];
+  });
   paramElements.pop();
 
   return (
@@ -176,12 +179,6 @@ export function SimpleCard({
         ) : null}
       </div>
 
-      {showSnippet ? (
-        <div className="mt-2">
-          <CodeBlock value={node.snippet} />
-        </div>
-      ) : null}
-
       <div className="text-xs mt-1 text-gray-600">
         Defined in file '{node.location.filename}' on line {node.location.line},
         column {node.location.col}.
@@ -202,7 +199,8 @@ export function SimpleSubCard({
   node,
   prefix,
   params,
-  returnType
+  returnType: rawReturnType,
+  isOptional
 }: {
   node: Omit<DocNodeShared, "location"> & {
     kind?: string;
@@ -211,24 +209,36 @@ export function SimpleSubCard({
   prefix?: string;
   params?: ParamDef[];
   returnType?: TsTypeDef;
+  isOptional?: boolean;
 }) {
-  const paramElements = (params ?? []).flatMap(p => [
-    <>
-      {p.name}
-      {p.tsType ? (
+  const paramElements = (params ?? []).flatMap(p => {
+    const [isOptional, tsType] = isTypeOptional(p.tsType);
+    return [
+      ((
         <>
-          : <TsType tsType={p.tsType} />
+          {p.name}
+          {isOptional ? "?" : null}
+          {tsType ? (
+            <>
+              : <TsType tsType={tsType} />
+            </>
+          ) : null}
         </>
-      ) : null}
-    </>,
-    ", "
-  ]);
+      ),
+      ", ")
+    ];
+  });
   paramElements.pop();
+
+  const [returnTypeIsOptional, returnType] = isTypeOptional(rawReturnType);
 
   return (
     <div className="mt-2 py-1 px-2 rounded bg-gray-100">
       <div className="text-sm font-mono">
         {prefix ? <span className="text-pink-800">{prefix} </span> : null}
+        {isOptional || returnTypeIsOptional ? (
+          <span className="text-pink-800">optional </span>
+        ) : null}
         <span>{node.name}</span>
         {params ? (
           <span className="text-gray-600">({paramElements})</span>

@@ -8,6 +8,14 @@ import {
 import { useNodes } from "../util/nodes";
 import { Link } from "./Link";
 
+export function isTypeOptional(
+  tsType: TsTypeDef | undefined
+): [boolean, TsTypeDef | undefined] {
+  return tsType && tsType.kind === TsTypeDefKind.Optional
+    ? [true, tsType.optional]
+    : [false, tsType];
+}
+
 export const TsType = ({ tsType }: { tsType: TsTypeDef }) => {
   const nodes = useNodes();
 
@@ -73,10 +81,11 @@ export const TsType = ({ tsType }: { tsType: TsTypeDef }) => {
           return <span>"{tsType.literal.string}"</span>;
         case LiteralDefKind.Boolean:
           return <span>{tsType.literal.boolean ? "true" : "false"}</span>;
+        default:
+          return null;
       }
-      return <></>;
     case TsTypeDefKind.Optional:
-      return <span>_optional_</span>;
+      return <span>Optional</span>;
     case TsTypeDefKind.Parenthesized:
       return (
         <span>

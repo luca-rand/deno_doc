@@ -29,7 +29,13 @@ export function InterfaceCard({ node }: { node: DocNodeInterface }) {
             <div className="mt-2">
               <p className="text-md font-medium">Properties</p>
               {node.interfaceDef.properties.map(node => {
-                return <SimpleSubCard node={node} returnType={node.tsType} />;
+                return (
+                  <SimpleSubCard
+                    node={node}
+                    returnType={node.tsType}
+                    isOptional={node.optional}
+                  />
+                );
               })}
             </div>
           ) : null}
