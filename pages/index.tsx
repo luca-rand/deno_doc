@@ -30,7 +30,12 @@ const Home = () => {
       </Head>
       <div className="flex flex-col max-w-4xl px-4 py-4 mx-auto sm:px-8 md:px-12 md:py-8">
         <div className="flex flex-col items-center sm:flex-row">
-          <img src="/logo.svg" className="w-48" alt="Deno logo" />
+          <img
+            src="/logo.svg"
+            className="w-48"
+            alt="Deno logo"
+            style={{ filter: "invert(1)" }}
+          />
           <div className="text-center md:ml-4 sm:text-left">
             <h1 className="text-4xl font-bold">deno doc</h1>
             <p>

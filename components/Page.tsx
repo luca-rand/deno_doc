@@ -13,17 +13,16 @@ export function Page(props: {
 
   return (
     <>
-      <div className="absolute inset-0 bottom-auto flex justify-between h-16 px-4 py-2 bg-white border-b border-gray-200 sm:h-20 sm:px-6">
+      <div className="absolute inset-0 bottom-auto flex justify-between h-16 px-4 py-2 bg-white border-b border-gray-200 dark:border-gray-900 dark:bg-black sm:h-20 sm:px-6">
         <Link href="/">
           <a className="flex items-center">
             <img
               src="/logo.svg"
               alt="logo"
               className="w-12 h-12 sm:h-16 sm:w-16"
+              style={{ filter: "invert(1)" }}
             />
-            <div className="mx-2 text-xl font-bold text-gray-900 sm:text-3xl">
-              deno doc
-            </div>
+            <div className="mx-2 text-xl font-bold sm:text-3xl">deno doc</div>
           </a>
         </Link>
         <div
@@ -64,7 +63,7 @@ export function Page(props: {
       <div className="absolute inset-0 flex flex-grow top-16 sm:top-20">
         <div
           className={
-            "bg-white lg:max-w-xs w-full overflow-y-auto absolute lg:static inset-0" +
+            "bg-white dark:bg-black border-r border-gray-200 dark:border-gray-900 lg:max-w-xs w-full overflow-y-auto absolute lg:static inset-0" +
             (drawerOpen ? "" : " hidden lg:block")
           }
           onClick={(e) => {
@@ -77,7 +76,7 @@ export function Page(props: {
             entrypoint={props.entrypoint}
           />
         </div>
-        <div className="w-full overflow-y-auto bg-gray-100">
+        <div className="w-full overflow-y-auto bg-white dark:bg-black">
           {props.children}
         </div>
       </div>

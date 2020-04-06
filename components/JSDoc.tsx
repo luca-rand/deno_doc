@@ -2,7 +2,7 @@ import React from "react";
 import ReactMarkdown from "react-markdown";
 import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
 import ts from "react-syntax-highlighter/dist/cjs/languages/hljs/typescript";
-import atomOneLight from "react-syntax-highlighter/dist/cjs/styles/hljs/atom-one-light";
+import atomOneDark from "react-syntax-highlighter/dist/cjs/styles/hljs/atom-one-dark";
 SyntaxHighlighter.registerLanguage("ts", ts);
 
 export function JSDoc(props: { jsdoc: string }) {
@@ -17,7 +17,7 @@ export function JSDoc(props: { jsdoc: string }) {
           </a>
         ),
         inlineCode: (props: { children: string }) => (
-          <code className="p-px font-mono bg-gray-200 rounded-sm">
+          <code className="p-px font-mono bg-gray-200 rounded-sm dark:bg-gray-900">
             {props.children}
           </code>
         ),
@@ -26,7 +26,7 @@ export function JSDoc(props: { jsdoc: string }) {
           <div className="w-full overflow-x-auto">
             <table
               {...props}
-              className="my-2 border border-collapse border-gray-300"
+              className="my-2 border border-collapse border-gray-300 dark:border-gray-900"
             />
           </div>
         ),
@@ -34,7 +34,7 @@ export function JSDoc(props: { jsdoc: string }) {
           <td
             {...props}
             className={
-              "border border-gray-300 px-2 py-1" +
+              "border border-gray-300 dark:border-gray-900 px-2 py-1" +
               (props.isHeader ? " font-medium" : "")
             }
           />
@@ -48,7 +48,7 @@ export function CodeBlock(props: { value: string }) {
   return (
     <SyntaxHighlighter
       language="typescript"
-      style={atomOneLight}
+      style={atomOneDark}
       customStyle={{
         fontSize: "0.75rem",
         padding: "0.5rem 0.75rem",

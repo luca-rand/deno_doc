@@ -19,7 +19,8 @@ module.exports = {
     },
   },
   variants: {
-    backgroundColor: ["responsive", "hover", "focus", "active"],
+    backgroundColor: ["responsive", "hover", "focus", "active", "dark"],
+    borderWidth: ["responsive", "dark"],
   },
-  plugins: [],
+  plugins: [require("./util/tailwind-dark-plugin")],
 };

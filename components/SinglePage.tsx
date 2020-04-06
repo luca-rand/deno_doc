@@ -39,12 +39,10 @@ export const SinglePage = memo(
           entrypoint={props.entrypoint}
           timestamp=""
         >
-          <div className="bg-gray-100 pb-3 px-4 sm:px-6 max-w-4xl">
+          <div className="max-w-4xl px-4 pb-3 sm:px-6">
             <div className="py-4">
-              <div className="text-gray-900 text-2xl font-medium mb-1">
-                Loading...
-              </div>
-              <div className="text-gray-900 text-lg">
+              <div className="mb-1 text-2xl font-medium">Loading...</div>
+              <div className="text-lg ">
                 It can take a few seconds for documentation to be generated.
               </div>
             </div>
@@ -64,10 +62,10 @@ export const SinglePage = memo(
           entrypoint={props.entrypoint}
           timestamp={props.data.timestamp}
         >
-          <div className="bg-gray-100 pb-3 px-4 sm:px-6 max-w-4xl">
+          <div className="max-w-4xl px-4 pb-3 sm:px-6">
             {hasNone ? (
               <div className="py-4">
-                <div className="text-gray-900 text-xl mb-1">
+                <div className="mb-1 text-xl">
                   This module has no exports that are recognized by deno doc.
                 </div>
               </div>
@@ -92,7 +90,7 @@ export const CardList = memo(
           <div>
             <div
               className={
-                "text-gray-900 font-medium mb-1 " +
+                "font-medium mb-1 " +
                 (nested ? "text-md mt-2" : "text-2xl mt-4")
               }
             >
@@ -113,7 +111,7 @@ export const CardList = memo(
           <div>
             <div
               className={
-                "text-gray-900 font-medium mb-1 " +
+                "font-medium mb-1 " +
                 (nested ? "text-md mt-2" : "text-2xl mt-4")
               }
             >
@@ -134,7 +132,7 @@ export const CardList = memo(
           <div>
             <div
               className={
-                "text-gray-900 font-medium mb-1 " +
+                "font-medium mb-1 " +
                 (nested ? "text-md mt-2" : "text-2xl mt-4")
               }
             >
@@ -155,7 +153,7 @@ export const CardList = memo(
           <div>
             <div
               className={
-                "text-gray-900 font-medium mb-1 " +
+                "font-medium mb-1 " +
                 (nested ? "text-md mt-2" : "text-2xl mt-4")
               }
             >
@@ -176,7 +174,7 @@ export const CardList = memo(
           <div>
             <div
               className={
-                "text-gray-900 font-medium mb-1 " +
+                "font-medium mb-1 " +
                 (nested ? "text-md mt-2" : "text-2xl mt-4")
               }
             >
@@ -197,7 +195,7 @@ export const CardList = memo(
           <div>
             <div
               className={
-                "text-gray-900 font-medium mb-1 " +
+                "font-medium mb-1 " +
                 (nested ? "text-md mt-2" : "text-2xl mt-4")
               }
             >
@@ -218,7 +216,7 @@ export const CardList = memo(
           <div>
             <div
               className={
-                "text-gray-900 font-medium mb-1 " +
+                "font-medium mb-1 " +
                 (nested ? "text-md mt-2" : "text-2xl mt-4")
               }
             >
@@ -278,12 +276,14 @@ export function SimpleCard({
   return (
     <div
       className={
-        "mt-2 p-2 bg-white " +
-        (nested ? "rounded border border-gray-300" : "rounded-md shadow")
+        "mt-2 p-2 bg-white dark:bg-black " +
+        (nested
+          ? "rounded border border-gray-300 dark:border-gray-900"
+          : "rounded-md shadow dark:border dark:border-gray-900")
       }
       id={id}
     >
-      <div className="text-lg font-mono break-words">
+      <div className="font-mono text-lg break-words">
         {prefix ? <span className="keyword">{prefix} </span> : null}
         {node.scope?.map((s, i) => (
           <>
@@ -311,11 +311,11 @@ export function SimpleCard({
         {suffix}
       </div>
 
-      <div className="text-xs mt-1 text-gray-600">
+      <div className="mt-1 text-xs text-gray-600">
         Defined in file '
         <a
           href={node.location.filename}
-          className="hover:text-gray-800 break-words"
+          className="break-words hover:text-gray-800"
         >
           {node.location.filename}
         </a>
@@ -323,7 +323,7 @@ export function SimpleCard({
       </div>
 
       {node.jsDoc ? (
-        <div className="text-xs mt-2">
+        <div className="mt-2 text-xs">
           <JSDoc jsdoc={node.jsDoc} />
         </div>
       ) : null}
@@ -366,8 +366,8 @@ export function SimpleSubCard({
   }
 
   return (
-    <div className="mt-2 py-1 px-2 rounded bg-gray-100">
-      <div className="text-sm font-mono break-words">
+    <div className="px-2 py-1 mt-2 bg-gray-100 rounded dark:bg-gray-900">
+      <div className="font-mono text-sm break-words">
         {prefix ? <span className="keyword">{prefix} </span> : null}
         <>{node.name}</>
         {params ? (
@@ -381,16 +381,16 @@ export function SimpleSubCard({
         ) : null}
       </div>
       {node.jsDoc ? (
-        <div className="text-xs mt-1">
+        <div className="mt-1 text-xs">
           <JSDoc jsdoc={node.jsDoc} />
         </div>
       ) : null}
       {node.location ? (
-        <div className="text-xs mt-1 text-gray-600">
+        <div className="mt-1 text-xs text-gray-600">
           Defined in file '
           <a
             href={node.location.filename}
-            className="hover:text-gray-800 break-words"
+            className="break-words hover:text-gray-800"
           >
             {node.location.filename}
           </a>

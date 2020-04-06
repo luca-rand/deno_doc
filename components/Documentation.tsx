@@ -42,7 +42,7 @@ export const Documentation = ({
 
     return (
       <div className="flex flex-col items-center justify-center h-full p-4 text-center">
-        <div className="text-3xl text-gray-800">{title}</div>
+        <div className="text-3xl text-gray-800 dark:text-gray-100">{title}</div>
         <div className="mt-2 text-lg">{details}</div>
         <Link href="/">
           <a className="mt-4 text-xl link">Go back home</a>
