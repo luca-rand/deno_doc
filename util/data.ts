@@ -20,14 +20,15 @@ export interface DocsData {
 export async function getData(
   entrypoint: string,
   hostname: string,
-  forceReload?: boolean
-): Promise<DocsData> {
+  quality?: "fresh" | "cache"
+): Promise<DocsData | null> {
   const req = await fetch(
     `${hostname}/api/docs?entrypoint=${encodeURIComponent(entrypoint)}${
-      forceReload ? "&force_reload=true" : ""
+      quality ? `&quality=${quality}` : ""
     }`
   );
   if (!req.ok) throw new Error((await req.json()).error);
+  if (req.status === 204) return null;
   const resp = await req.json();
   return {
     timestamp: resp.timestamp,

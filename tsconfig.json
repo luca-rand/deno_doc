@@ -14,6 +14,6 @@
     "isolatedModules": true,
     "jsx": "preserve"
   },
-  "exclude": ["node_modules", "api"],
+  "exclude": ["node_modules", "api", "worker"],
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"]
 }

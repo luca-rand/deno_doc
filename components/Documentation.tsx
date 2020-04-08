@@ -1,33 +1,37 @@
 // Copyright 2020 the Deno authors. All rights reserved. MIT license.
 
-import { useReducer, useEffect } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import Head from "next/head";
-import useSWR from "swr";
 import { getData, DocsData } from "../util/data";
 import { SinglePage } from "./SinglePage";
 
 export const Documentation = ({
+  initialData,
   entrypoint,
   name,
 }: {
+  initialData: DocsData | null;
   entrypoint: string;
   name: string;
 }) => {
-  const [loadCount, forceReload] = useReducer((i) => ++i, 0);
-  const { data, error } = useSWR<DocsData, string>(
-    [entrypoint, loadCount],
-    () =>
-      getData(entrypoint, "", loadCount > 0).catch((err) => {
-        throw err?.message ?? err.toString();
-      }),
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-      refreshWhenHidden: false,
-      refreshWhenOffline: false,
+  const [shouldForceReload, setForceReload] = useState<boolean>(false);
+  const forceReload = useMemo(() => () => setForceReload(true), [
+    setForceReload,
+  ]);
+  const [data, setData] = useState<DocsData | null>(initialData);
+  const [error, setError] = useState<string | null>();
+
+  useEffect(() => {
+    if (shouldForceReload || data === null) {
+      setData(null);
+      setError(null);
+      getData(entrypoint, "", shouldForceReload ? "fresh" : undefined)
+        .then((d) => setData(d))
+        .catch((err) => setError(err?.message ?? err.toString()))
+        .finally(() => setForceReload(false));
     }
-  );
+  }, [shouldForceReload]);
 
   useEffect(() => {
     let { hash } = location;
@@ -80,7 +84,7 @@ export const Documentation = ({
         />
       </Head>
       <SinglePage
-        forceReload={() => forceReload()}
+        forceReload={forceReload}
         entrypoint={entrypoint}
         data={data}
       />

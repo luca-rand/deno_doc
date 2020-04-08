@@ -28,7 +28,7 @@ export const SinglePage = memo(
   (props: {
     forceReload: () => void;
     entrypoint: string;
-    data: DocsData | undefined;
+    data: DocsData | null;
   }) => {
     const nodes = useMemo(() => expandNamespaces(props.data?.nodes ?? []), [
       props.data?.nodes,

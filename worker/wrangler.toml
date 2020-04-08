@@ -1,6 +1,17 @@
 name = "deno_doc_cache"
-type = "javascript"
+type = "webpack"
 account_id = "895762025d37fc687ecd72d7cc80204a"
+zone_id = "0ce0e4d3281b88d402b5e7b874f99d2f"
 workers_dev = false
 route = "https://doc.deno.land/api/docs*"
-zone_id = "c192cf8ac042c681023493c52edd44c8"
+webpack_config = "webpack.config.js"
+vars = { API_ORIGIN = "https://doc-website.denoland.now.sh" }
+
+[env.lcasdev]
+account_id = "93bfcf72dfea0e9f2bf5563bc71052cf"
+zone_id = "0ce0e4d3281b88d402b5e7b874f99d2f"
+route = "https://denodoc.lcas.dev/api/docs*"
+vars = { API_ORIGIN = "https://deno-doc.lucacasonato.now.sh" }
+kv-namespaces = [ 
+  { binding = "DOCS_CACHE", id = "e678c6a4cd9f42098f758fb9c6945b18" } 
+]
