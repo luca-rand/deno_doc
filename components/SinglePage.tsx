@@ -304,7 +304,7 @@ export function SimpleCard({
         {params ? (
           <span className="text-gray-600">({paramElements})</span>
         ) : null}
-        {returnType ? (
+        {returnType && returnType.repr !== "void" ? (
           <span className="text-gray-600 ">
             {": "}
             <TsType tsType={returnType} scope={node.scope ?? []} />
@@ -384,7 +384,7 @@ export function SimpleSubCard({
         {params ? (
           <span className="text-gray-600">({paramElements})</span>
         ) : null}
-        {returnType ? (
+        {returnType && returnType.repr !== "void" ? (
           <span className="text-gray-600">
             {": "}
             <TsType tsType={returnType} scope={node.scope ?? []} />
