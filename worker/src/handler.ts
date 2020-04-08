@@ -21,6 +21,7 @@ export async function handleRequest(event: FetchEvent) {
     return new Response(`{"error": "No entrypoint URL specified."}`, {
       status: 400,
       headers: {
+        "Content-Type": "application/json",
         "Cache-Control": `max-age=${maxAge}`,
       },
     });
@@ -38,6 +39,7 @@ export async function handleRequest(event: FetchEvent) {
       return new Response(stream, {
         status: 200,
         headers: {
+          "Content-Type": "application/json",
           "Cache-Control": `max-age=${maxAge}`,
         },
       });
@@ -66,6 +68,7 @@ export async function handleRequest(event: FetchEvent) {
     return new Response(toClient, {
       status: 200,
       headers: {
+        "Content-Type": "application/json",
         "Cache-Control": `max-age=${maxAge}`,
       },
     });
@@ -74,6 +77,7 @@ export async function handleRequest(event: FetchEvent) {
   return new Response(`{"error": "API request failed."}`, {
     status: 400,
     headers: {
+      "Content-Type": "application/json",
       "Cache-Control": `max-age=${maxAge}`,
     },
   });
