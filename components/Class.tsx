@@ -5,7 +5,6 @@ import {
   DocNodeClass,
   findNodeByScopedName,
   getFieldsForClassRecursive,
-  ParamDef,
   TsTypeParamDef,
 } from "../util/docs";
 import { SimpleCard, SimpleSubCard } from "./SinglePage";
