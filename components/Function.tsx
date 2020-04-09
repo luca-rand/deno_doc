@@ -53,11 +53,17 @@ export function Params({
             </>
           );
         })
-        .reduce((r, a) => (
-          <>
-            {r}, {a}
-          </>
-        ))}
+        .reduce<React.ReactNode>(
+          (r, a) =>
+            r ? (
+              <>
+                {r}, {a}
+              </>
+            ) : (
+              a
+            ),
+          null
+        )}
     </>
   );
 }
