@@ -1,6 +1,6 @@
 // Copyright 2020 the Deno authors. All rights reserved. MIT license.
 
-const origin = API_ORIGIN + "/api/docs";
+const apiOrigin = NOW_ORIGIN + "/api/docs";
 const maxAge = 1; // cache request in memory for 1 second
 
 // The quality of data the API provides
@@ -13,9 +13,77 @@ enum Quality {
   Fresh = "fresh",
 }
 
-export async function handleRequest(event: FetchEvent) {
-  const { request } = event;
-  const url = new URL(request.url);
+export async function handleRequest(event: FetchEvent): Promise<Response> {
+  const url = new URL(event.request.url);
+  if (url.pathname.startsWith("/https/")) {
+    return handleFrontend(event);
+  } else if (url.pathname === "/api/docs") {
+    return handleAPI(event);
+  }
+  return fetch(event.request);
+}
+
+async function handleFrontend(event: FetchEvent): Promise<Response> {
+  const url = new URL(event.request.url);
+  const entrypoint = url.pathname.replace(/^\/https\//, "https://");
+  const hash = await sha256(entrypoint);
+  const key = hash + "_html";
+  const stream = await DOCS_CACHE.get(key, "stream");
+  if (stream) {
+    return new Response(stream, {
+      status: 200,
+      headers: {
+        "Content-Type": "text/html",
+        "Cache-Control": `max-age=${maxAge}`,
+        "X-Deno-Cache": "HIT",
+      },
+    });
+  }
+  const remoteURL = new URL(`${NOW_ORIGIN}${url.pathname}`);
+  const response = await fetch(remoteURL.href);
+  if (!response.ok) {
+    const final = new Response(response.body, response);
+    final.headers.set("Cache-Control", `max-age=${maxAge}`);
+    return final;
+  }
+
+  if (response.body) {
+    const [toCache, toClient] = response.body.tee();
+    event.waitUntil(
+      (async () => {
+        const data = await DOCS_CACHE.get<{ timestamp: string }>(
+          hash + "_api_docs",
+          "json"
+        );
+        const html = await new Response(toCache).text();
+        if (data && data.timestamp && html.includes(data.timestamp)) {
+          await DOCS_CACHE.put(key, html, {
+            expirationTtl: 86400, // cache for 1 day
+          });
+        }
+      })()
+    );
+    return new Response(toClient, {
+      status: 200,
+      headers: {
+        "Content-Type": "text/html",
+        "Cache-Control": `max-age=${maxAge}`,
+        "X-Deno-Cache": "MISS",
+      },
+    });
+  }
+
+  return new Response(`Failed to get rendered page.`, {
+    status: 500,
+    headers: {
+      "Content-Type": "text/html",
+      "Cache-Control": `max-age=${maxAge}`,
+    },
+  });
+}
+
+async function handleAPI(event: FetchEvent): Promise<Response> {
+  const url = new URL(event.request.url);
   const entrypoint = url.searchParams.get("entrypoint");
   if (!entrypoint) {
     return new Response(`{"error": "No entrypoint URL specified."}`, {
@@ -27,10 +95,8 @@ export async function handleRequest(event: FetchEvent) {
     });
   }
 
-  const remoteURL = new URL(
-    `${origin}?entrypoint=${encodeURIComponent(entrypoint)}`
-  );
-  const key = await sha256(remoteURL.href);
+  const hash = await sha256(entrypoint);
+  const key = hash + "_api_docs";
   const quality = (url.searchParams.get("quality") || "") as Quality;
 
   if (quality !== Quality.Fresh) {
@@ -41,6 +107,7 @@ export async function handleRequest(event: FetchEvent) {
         headers: {
           "Content-Type": "application/json",
           "Cache-Control": `max-age=${maxAge}`,
+          "X-Deno-Cache": "HIT",
         },
       });
     }
@@ -50,7 +117,9 @@ export async function handleRequest(event: FetchEvent) {
       });
     }
   }
-
+  const remoteURL = new URL(
+    `${apiOrigin}?entrypoint=${encodeURIComponent(entrypoint)}`
+  );
   const response = await fetch(remoteURL.href);
   if (!response.ok) {
     const final = new Response(response.body, response);
@@ -61,21 +130,25 @@ export async function handleRequest(event: FetchEvent) {
   if (response.body) {
     const [toCache, toClient] = response.body.tee();
     event.waitUntil(
-      DOCS_CACHE.put(key, toCache, {
-        expirationTtl: 86400, // cache for 1 day
-      })
+      Promise.allSettled([
+        DOCS_CACHE.delete(hash + "_html"),
+        DOCS_CACHE.put(key, toCache, {
+          expirationTtl: 86400, // cache for 1 day
+        }),
+      ])
     );
     return new Response(toClient, {
       status: 200,
       headers: {
         "Content-Type": "application/json",
         "Cache-Control": `max-age=${maxAge}`,
+        "X-Deno-Cache": "MISS",
       },
     });
   }
 
   return new Response(`{"error": "API request failed."}`, {
-    status: 400,
+    status: 500,
     headers: {
       "Content-Type": "application/json",
       "Cache-Control": `max-age=${maxAge}`,
